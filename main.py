@@ -45,7 +45,7 @@ def main():
     # Read prompts csv content
     entries = []
     with open('prompts.csv') as file:
-        reader = csv.reader(file, delimiter = ';')
+        reader = csv.reader(file, delimiter = ',')
         next(reader) # ignore format line
         for row in reader:
             if row[1] == 'All': entries.extend([row[0], style] for style in STYLES)
