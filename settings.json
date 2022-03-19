@@ -1,6 +1,6 @@
 {
     "webhook":null,
     "keepFiles":true,
-    "typingDelay":false,
+    "typingDelay":true,
     "maxWait":25
 }

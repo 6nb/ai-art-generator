@@ -14,19 +14,24 @@ import re
 import os
 
 STYLES = [
-    "Etching",
-    "Baroque",
-    "Mystical",
-    "Festive",
-    "Dark Fantasy",
-    "Psychic",
-    "Pastel",
-    "HD",
-    "Vibrant",
-    "Fantasy Art",
-    "Steampunk",
-    "Ukiyoe",
+    "Psychedelic",
     "Synthwave",
+    "Ghibli",
+    "Steampunk",
+    "Fantasy Art",
+    "Vibrant",
+    "HD",
+    "Psychic",
+    "Dark Fantasy",
+    "Mystical",
+    "Baroque",
+    "Etching",
+    "S.Dali",
+    "Wuhtercuhler",
+    "Provenance",
+    "Moonwalker",
+    "Blacklight",
+    "Ukiyoe",
     "No Style"
 ]
 
@@ -62,6 +67,7 @@ def main():
     # If you have chromedriver in PATH, pass in Service() object (selenium.webdriver.common.service)
 
     # Generate art
+    if not os.path.exists("generated"): os.mkdir("generated")
     for order, entry in enumerate(entries, start=1):
         driver.get('https://app.wombo.art/')
         prompt, style = entry[0], entry[1]
@@ -80,7 +86,7 @@ def main():
         try:
             wait = WebDriverWait(driver, settings['maxWait'])
             wait.until(expected_conditions.visibility_of_element_located((By.XPATH, '//input[@label="Name artwork"]')))
-            image = driver.find_element(By.XPATH, '//img[@class="ArtCard__CardImage-sc-bttd39-1 fHqXjT"]')
+            image = driver.find_element(By.XPATH, '//img[@class="ArtCard__CardImage-sc-67t09v-1 bVtRRR"]')
         except TimeoutException:
             errormsg = f'[TIME OUT] Waited to long generating artwork for prompt "{prompt}" in style "{style}"'
             if settings['webhook']: requests.post(settings['webhook'], data={'content':errormsg})
@@ -94,10 +100,11 @@ def main():
         
         # (Optional) Send via webhook
         if settings['webhook']:
-            requests.post(settings['webhook'],
-                files={'file':open(f'generated/{filename}', 'rb')},
-                data={'content':f'**Prompt:** {prompt}\n**Style:** {style}'}
-            )
+            with open (f'generated/{filename}', 'rb') as file:
+                requests.post(settings['webhook'],
+                    files={'file':file},
+                    data={'content':f'**Prompt:** {prompt}\n**Style:** {style}'}
+                )
 
         print(f'[SUCCESS] Created artwork for prompt "{prompt}" in style "{style}"')
         if not settings['keepFiles']: os.remove(f'generated/{filename}') # for temporary saving only

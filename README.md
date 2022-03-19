@@ -21,7 +21,7 @@ If "pip" isn't found on your machine you have a python installation issue
 
 This tool uses [Selenium](https://selenium-python.readthedocs.io/) to scrape artwork, which requires ChromeDriver to automate web browsing.
 
-The version that works for me is included. If you have a different version of chrome, download the corresponding driver [here](https://chromedriver.chromium.org/downloads) and replace it.
+The version that works for me (Chrome 99) is included. If you have a different version of chrome, download the corresponding driver [here](https://chromedriver.chromium.org/downloads) and replace it.
 
 ## Usage
 
