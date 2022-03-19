@@ -46,7 +46,7 @@ def main():
             settings['webhook'] and
             re.match(r'https:\/\/discord\.com\/api\/webhooks\/\d+\/.+', settings['webhook']) and
             (webhook_info := requests.get(settings['webhook'])).status_code == 200
-        ): print(f"Using webhook \"{webhook_info['name']}\".")
+        ): print(f"Using webhook \"{webhook_info.json()['name']}\".")
         else: settings['webhook'] = None
 
     # Read prompts csv content
