@@ -2,7 +2,7 @@
 
 Automate AI art generation using [wombot.art](https://app.wombo.art/).
 
-![photos](https://user-images.githubusercontent.com/77910109/159138009-f769a4e3-466d-4b9f-ab9d-2c571c75d5ab.png)
+![generated art](https://user-images.githubusercontent.com/77910109/159138726-343c770d-e35c-41d8-958c-1050f56f47f7.png)
 
 Also check out [SnailBot art integration!](#snailbot)
 
@@ -78,25 +78,25 @@ Supported styles:
 
 Edit `settings.json` to your liking:
 
-### browser
+* **browser**
 
-The browser you are using: either "chrome" or "firefox"
+    * The browser you are using: either "chrome" or "firefox
 
-#### driverPath
+* **driverPath**
 
-location of either chromedriver or geckodriver. (For linux + firefox: `/usr/local/bin/geckodriver`)
+    * location of either chromedriver or geckodriver. (For linux + firefox: `/usr/local/bin/geckodriver`)
 
-#### webhook 
-optional discord webhook url to send art to
+* **webhook** 
+    * optional discord webhook url to send art to
 
-#### keepFiles
-whether to keep files after creation (as opposed to sending to webhook then deleting)
+* **keepFiles**
+    * whether to keep files after creation (as opposed to sending to webhook then deleting)
 
-### typingDelay
-add (somewhat arbitrary) delay to prompt typing. slower but improves success rate
+* **typingDelay**
+    * add (somewhat arbitrary) delay to prompt typing. slower but improves success rate
 
-#### maxWait
-number of seconds to wait for art to generate before reporting an error
+* **maxWait**
+    * number of seconds to wait for art to generate before reporting an error
 
 ## 5. Run
 
