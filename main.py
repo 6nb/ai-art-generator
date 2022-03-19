@@ -1,11 +1,13 @@
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-import warnings
 import requests
+
+import warnings
 import random
 import json
 import time
@@ -41,34 +43,42 @@ def main():
     with open('settings.json') as file:
         settings = json.load(file)
         if (
-            not settings['webhook'] or
-            not re.match(r'https:\/\/discord\.com\/api\/webhooks\/\d+\/.+', settings['webhook']) or
-            not requests.get(settings['webhook']).status_code == 200
-        ): settings['webhook'] = None
-        else: print('Webhook connected.')
+            settings['webhook'] and
+            re.match(r'https:\/\/discord\.com\/api\/webhooks\/\d+\/.+', settings['webhook']) and
+            (webhook_info := requests.get(settings['webhook'])).status_code == 200
+        ): print(f"Using webhook \"{webhook_info['name']}\".")
+        else: settings['webhook'] = None
 
     # Read prompts csv content
     entries = []
     with open('prompts.csv') as file:
         reader = csv.reader(file, delimiter = ',')
         next(reader) # ignore format line
-        for row in reader:
-            if row[1] == 'All': entries.extend([row[0], style] for style in STYLES)
-            elif row[1] not in STYLES: raise Exception(f'Style "{row[1]}" is not valid.')
+        for index, row in enumerate(reader, start=2):
+            if not len(row) == 2: raise Exception(f"Prompt at line {index} is invalid.") 
+            elif row[1] == 'All': entries.extend([row[0], style] for style in STYLES)
+            elif row[1] not in STYLES: raise Exception(f"Style \"{row[1]}\" at line {index} is not valid.")
             else: entries.append([row[0], row[1]])
     
     # Set selenium browser settings
-    options = Options()
-    options.headless = True
-    options.add_experimental_option("excludeSwitches", ["enable-logging"])
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    driver = webdriver.Chrome('chromedriver.exe', options=options)
-    # ^ Deprecated in latest selenium
-    # If you have chromedriver in PATH, pass in Service() object (selenium.webdriver.common.service)
+    if settings["browser"].lower() == "chrome":
+        options = ChromeOptions()
+        options.headless = True
+        options.add_experimental_option("excludeSwitches", ["enable-logging"])
+        driver = webdriver.Chrome(settings["driverPath"], options=options)
+    
+    elif settings["browser"].lower() == "firefox":
+        options = FirefoxOptions()
+        options.headless = True
+        driver = webdriver.Firefox(executable_path=settings["driverPath"], options=options)
+
+    else: raise Exception("Unsupported browser.")
 
     # Generate art
     if not os.path.exists("generated"): os.mkdir("generated")
-    for order, entry in enumerate(entries, start=1):
+    print("Driver started. Generating art...")
+    for entry in entries:
         driver.get('https://app.wombo.art/')
         prompt, style = entry[0], entry[1]
 
@@ -94,7 +104,7 @@ def main():
             continue
             
         # Save File
-        filename = f'{str(order).rjust(3,"0")}_{prompt}_{style}.jpg'
+        filename = f'{time.time()}_{prompt}_{style}.jpg'
         with open(f'generated/{filename}', 'wb') as file:
             file.write(requests.get(image.get_attribute('src')).content)
         
@@ -114,4 +124,6 @@ def main():
 if __name__ == '__main__':
     try: main()
     except Exception as error:
-        print(error)
+        print("Error:", error)
+    except KeyboardInterrupt:
+        print("Stopped by user.")

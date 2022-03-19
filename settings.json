@@ -1,4 +1,6 @@
 {
+    "browser":"chrome",
+    "driverPath":"./chromedriver.exe",
     "webhook":null,
     "keepFiles":true,
     "typingDelay":true,
